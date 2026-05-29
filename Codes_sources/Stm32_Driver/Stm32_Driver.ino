@@ -68,9 +68,9 @@ void handleMotorCommand(uint8_t motorId, uint16_t steps, uint8_t dir) {
 void traiterOctet(uint8_t b) {
     switch (rxState) {
         case STATE_WAIT_HEADER:
-            if (b == 0xAA) rxState = STATE_MOTOR_ID;
+            if (b == 0xAA) rxState = STATE_MOTOR_ID; //attente header
             break;
-        case STATE_MOTOR_ID:
+        case STATE_MOTOR_ID: // Attente de l'id du moteur
             if (b >= 1 && b <= 4) {
                 rxMotorId = b;
                 rxState = STATE_STEPS_L;
@@ -79,7 +79,7 @@ void traiterOctet(uint8_t b) {
                 rxState = STATE_WAIT_HEADER;
             }
             break;
-        case STATE_STEPS_L:
+        case STATE_STEPS_L: //octets des nombres de pas
             rxSteps_L = b;
             rxState = STATE_STEPS_H;
             break;
@@ -87,11 +87,11 @@ void traiterOctet(uint8_t b) {
             rxSteps_H = b;
             rxState = STATE_DIR;
             break;
-        case STATE_DIR:
+        case STATE_DIR: //la direction
             rxDir = b;
-            rxState = STATE_CHECKSUM;
+            rxState = STATE_CHECKSUM; 
             break;
-        case STATE_CHECKSUM:
+        case STATE_CHECKSUM: //recalcule du checksum 
             rxChecksum = b;
             // Verification d'integrite par XOR de tous les octets de donnees
             uint8_t checksumCalcule = rxMotorId ^ rxSteps_L ^ rxSteps_H ^ rxDir;

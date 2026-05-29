@@ -49,12 +49,12 @@ bool validerChecksum(ControlPacket* pkt) {
 void envoyerMoteur(uint8_t motorId, uint16_t steps, uint8_t direction) {
     if (steps == 0) return;
     uint8_t checksum = motorId ^ (steps & 0xFF) ^ ((steps >> 8) & 0xFF) ^ direction;
-    Serial2.write(0xAA);
-    Serial2.write(motorId);
-    Serial2.write((uint8_t)(steps & 0xFF));
-    Serial2.write((uint8_t)((steps >> 8) & 0xFF));
-    Serial2.write(direction);
-    Serial2.write(checksum);
+    Serial2.write(0xAA);                              // 1. Header (entête)
+    Serial2.write(motorId);                           // 2. ID moteur (1-4)
+    Serial2.write((uint8_t)(steps & 0xFF));           // 3. Octet bas du nombre de pas
+    Serial2.write((uint8_t)((steps >> 8) & 0xFF));    // 4. Octet haut du nombre de pas
+    Serial2.write(direction);                         // 5. Direction (0 ou 1)
+    Serial2.write(checksum);                          // 6. Checksum pour validation
     Serial.printf("[UART] Moteur %d | Steps: %d | Dir: %d\n", motorId, steps, direction);
 }
 
